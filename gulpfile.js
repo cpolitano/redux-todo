@@ -5,7 +5,7 @@ var del = require('del');
 var babel = require('gulp-babel');
 
 gulp.task('clean', function() {
-  return del('dist');
+  return del(['dist','public/js/app.js']);
 });
 
 gulp.task('babel', function () {
