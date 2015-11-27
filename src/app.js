@@ -2,6 +2,7 @@
 var ReactDOM = require("react-dom");
 var React = require("react");
 
+import expect from "expect";
 import { createStore } from "redux";
 
 // Reducer function
@@ -56,3 +57,23 @@ const render = () => {
 
 store.subscribe(render);
 render();
+
+const testCounterPlus = () => {
+	const counterInitial = 0;
+	const counterPlus = 1;
+	expect(
+		counter(counterInitial, { type: 'INCREMENT' })
+	).toEqual(counterPlus);
+}
+
+const testCounterMinus = () => {
+	const counterInitial = 2;
+	const counterMinus = 1;
+	expect(
+		counter(counterInitial, { type: 'DECREMENT' })
+	).toEqual(counterMinus);
+}
+
+testCounterPlus();
+testCounterMinus();
+console.log("all tests passed");

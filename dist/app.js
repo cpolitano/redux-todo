@@ -1,5 +1,11 @@
 "use strict";
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var _expect = require("expect");
+
+var _expect2 = _interopRequireDefault(_expect);
+
 var _redux = require("redux");
 
 // Reducer function
@@ -70,3 +76,19 @@ var render = function render() {
 
 store.subscribe(render);
 render();
+
+var testCounterPlus = function testCounterPlus() {
+	var counterInitial = 0;
+	var counterPlus = 1;
+	(0, _expect2["default"])(counter(counterInitial, { type: 'INCREMENT' })).toEqual(counterPlus);
+};
+
+var testCounterMinus = function testCounterMinus() {
+	var counterInitial = 2;
+	var counterMinus = 1;
+	(0, _expect2["default"])(counter(counterInitial, { type: 'DECREMENT' })).toEqual(counterMinus);
+};
+
+testCounterPlus();
+testCounterMinus();
+console.log("all tests passed");
