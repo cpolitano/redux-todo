@@ -6,6 +6,10 @@ var _expect = require("expect");
 
 var _expect2 = _interopRequireDefault(_expect);
 
+var _deepFreeze = require("deep-freeze");
+
+var _deepFreeze2 = _interopRequireDefault(_deepFreeze);
+
 var _redux = require("redux");
 
 // Reducer function
@@ -67,10 +71,10 @@ var render = function render() {
 	ReactDOM.render(React.createElement(Counter, {
 		value: store.getState(),
 		onIncrement: function () {
-			return store.dispatch({ type: 'INCREMENT' });
+			return store.dispatch({ type: "INCREMENT" });
 		},
 		onDecrement: function () {
-			return store.dispatch({ type: 'DECREMENT' });
+			return store.dispatch({ type: "DECREMENT" });
 		} }), document.getElementById("app"));
 };
 
@@ -80,13 +84,15 @@ render();
 var testCounterPlus = function testCounterPlus() {
 	var counterInitial = 0;
 	var counterPlus = 1;
-	(0, _expect2["default"])(counter(counterInitial, { type: 'INCREMENT' })).toEqual(counterPlus);
+	(0, _deepFreeze2["default"])("counterInitial");
+	(0, _expect2["default"])(counter(counterInitial, { type: "INCREMENT" })).toEqual(counterPlus);
 };
 
 var testCounterMinus = function testCounterMinus() {
 	var counterInitial = 2;
 	var counterMinus = 1;
-	(0, _expect2["default"])(counter(counterInitial, { type: 'DECREMENT' })).toEqual(counterMinus);
+	(0, _deepFreeze2["default"])("counterInitial");
+	(0, _expect2["default"])(counter(counterInitial, { type: "DECREMENT" })).toEqual(counterMinus);
 };
 
 testCounterPlus();

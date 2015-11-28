@@ -3,6 +3,7 @@ var ReactDOM = require("react-dom");
 var React = require("react");
 
 import expect from "expect";
+import deepFreeze from "deep-freeze";
 import { createStore } from "redux";
 
 // Reducer function
@@ -47,10 +48,10 @@ const render = () => {
 		<Counter 
 			value={ store.getState() }
 			onIncrement={() =>
-				store.dispatch({ type: 'INCREMENT' })
+				store.dispatch({ type: "INCREMENT" })
 			}
 			onDecrement={() =>
-				store.dispatch({ type: 'DECREMENT' })
+				store.dispatch({ type: "DECREMENT" })
 			} />, document.getElementById("app")
 	);
 }
@@ -61,16 +62,18 @@ render();
 const testCounterPlus = () => {
 	const counterInitial = 0;
 	const counterPlus = 1;
+	deepFreeze("counterInitial");
 	expect(
-		counter(counterInitial, { type: 'INCREMENT' })
+		counter(counterInitial, { type: "INCREMENT" })
 	).toEqual(counterPlus);
 }
 
 const testCounterMinus = () => {
 	const counterInitial = 2;
 	const counterMinus = 1;
+	deepFreeze("counterInitial");
 	expect(
-		counter(counterInitial, { type: 'DECREMENT' })
+		counter(counterInitial, { type: "DECREMENT" })
 	).toEqual(counterMinus);
 }
 
