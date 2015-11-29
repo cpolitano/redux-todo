@@ -99,6 +99,9 @@ var testCounterMinus = function testCounterMinus() {
 testCounterPlus();
 testCounterMinus();
 console.log("all tests passed");
+"use strict";
+
+console.log("inside concatted file");
 },{"deep-freeze":2,"expect":8,"react":170,"react-dom":14,"redux":172}],2:[function(require,module,exports){
 module.exports = function deepFreeze (o) {
   Object.freeze(o);

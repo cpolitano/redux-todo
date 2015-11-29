@@ -98,3 +98,6 @@ var testCounterMinus = function testCounterMinus() {
 testCounterPlus();
 testCounterMinus();
 console.log("all tests passed");
+"use strict";
+
+console.log("inside concatted file");
