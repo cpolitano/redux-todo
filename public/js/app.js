@@ -1,6 +1,100 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+var _expect = require("expect");
+
+var _expect2 = _interopRequireDefault(_expect);
+
+var _deepFreeze = require("deep-freeze");
+
+var _deepFreeze2 = _interopRequireDefault(_deepFreeze);
+
+var _redux = require("redux");
+
+var ReactDOM = require("react-dom");
+var React = require("react");
+
+var todos = function todos(state, action) {
+	if (state === undefined) state = [];
+
+	switch (action.type) {
+		case "ADD":
+			return [].concat(_toConsumableArray(state), [{
+				id: action.id,
+				text: action.text,
+				completed: false
+			}]);
+		case "TOGGLE":
+			return state.map(function (todo) {
+				if (todo.id !== action.id) {
+					return todo;
+				}
+
+				return _extends({}, todo, {
+					completed: !todo.completed
+				});
+			});
+		case "DEFAULT":
+			return state;
+	}
+};
+
+var testAddTodo = function testAddTodo() {
+	var stateBefore = [];
+	var action = {
+		type: "ADD",
+		id: 1,
+		text: "Try redux"
+	};
+	var stateAfter = [{
+		id: 1,
+		text: "Try redux",
+		completed: false
+	}];
+	(0, _deepFreeze2["default"])(stateBefore);
+	(0, _deepFreeze2["default"])(action);
+	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
+};
+
+var testToggleTodo = function testToggleTodo() {
+	var stateBefore = [{
+		id: 1,
+		text: "Try redux",
+		completed: false
+	}, {
+		id: 2,
+		text: "Write tests",
+		completed: false
+	}];
+	var action = {
+		type: "TOGGLE",
+		id: 1
+	};
+	var stateAfter = [{
+		id: 1,
+		text: "Try redux",
+		completed: true
+	}, {
+		id: 2,
+		text: "Write tests",
+		completed: false
+	}];
+	(0, _deepFreeze2["default"])(stateBefore);
+	(0, _deepFreeze2["default"])(action);
+	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
+};
+
+testAddTodo();
+testToggleTodo();
+console.log("todo tests passed");
+"use strict";
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var _expect = require("expect");
@@ -63,11 +157,6 @@ store.subscribe(function () {
 	return console.log(store.getState());
 });
 
-// Test out functions
-store.dispatch({ type: 'INCREMENT' });
-store.dispatch({ type: 'INCREMENT' });
-store.dispatch({ type: 'DECREMENT' });
-
 var render = function render() {
 	ReactDOM.render(React.createElement(Counter, {
 		value: store.getState(),
@@ -99,9 +188,6 @@ var testCounterMinus = function testCounterMinus() {
 testCounterPlus();
 testCounterMinus();
 console.log("all tests passed");
-"use strict";
-
-console.log("inside concatted file");
 },{"deep-freeze":2,"expect":8,"react":170,"react-dom":14,"redux":172}],2:[function(require,module,exports){
 module.exports = function deepFreeze (o) {
   Object.freeze(o);
