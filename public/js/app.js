@@ -7,6 +7,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
 var _expect = require("expect");
 
 var _expect2 = _interopRequireDefault(_expect);
@@ -17,33 +25,51 @@ var _deepFreeze2 = _interopRequireDefault(_deepFreeze);
 
 var _redux = require("redux");
 
-var ReactDOM = require("react-dom");
-var React = require("react");
+var todo = function todo(state, action) {
+	switch (action.type) {
+		case "ADD":
+			return {
+				id: action.id,
+				text: action.text,
+				completed: false
+			};
+		case "TOGGLE":
+			if (state.id !== action.id) {
+				return state;
+			}
+			return _extends({}, state, {
+				completed: !state.completed
+			});
+		case "DEFAULT":
+			return state;
+	}
+};
 
 var todos = function todos(state, action) {
 	if (state === undefined) state = [];
 
 	switch (action.type) {
 		case "ADD":
-			return [].concat(_toConsumableArray(state), [{
-				id: action.id,
-				text: action.text,
-				completed: false
-			}]);
+			return [].concat(_toConsumableArray(state), [todo(undefined, action)]);
 		case "TOGGLE":
-			return state.map(function (todo) {
-				if (todo.id !== action.id) {
-					return todo;
-				}
-
-				return _extends({}, todo, {
-					completed: !todo.completed
-				});
+			return state.map(function (t) {
+				return todo(t, action);
 			});
 		case "DEFAULT":
 			return state;
 	}
 };
+
+var store = (0, _redux.createStore)(todos);
+console.log(store.getState());
+
+store.dispatch({
+	id: 1,
+	text: "the first todo",
+	type: "ADD"
+});
+
+console.log(store.getState());
 
 var testAddTodo = function testAddTodo() {
 	var stateBefore = [];
