@@ -31,13 +31,14 @@ const Counter = ({
 );
 
 // Create the store
-const store = createStore(counter);
+// const store = createStore(counter);
 
-// Subscribe to the store
-store.subscribe(() =>
-  console.log(store.getState())
-);
+// // Subscribe to the store
+// store.subscribe(() =>
+//   console.log(store.getState())
+// );
 
+// Render and attach to DOM
 const render = () => {
 	ReactDOM.render(
 		<Counter 
@@ -47,31 +48,9 @@ const render = () => {
 			}
 			onDecrement={() =>
 				store.dispatch({ type: "DECREMENT" })
-			} />, document.getElementById("app")
+			} />, document.getElementById("react-counter-app")
 	);
 }
 
-store.subscribe(render);
-render();
-
-const testCounterPlus = () => {
-	const counterInitial = 0;
-	const counterPlus = 1;
-	deepFreeze("counterInitial");
-	expect(
-		counter(counterInitial, { type: "INCREMENT" })
-	).toEqual(counterPlus);
-}
-
-const testCounterMinus = () => {
-	const counterInitial = 2;
-	const counterMinus = 1;
-	deepFreeze("counterInitial");
-	expect(
-		counter(counterInitial, { type: "DECREMENT" })
-	).toEqual(counterMinus);
-}
-
-testCounterPlus();
-testCounterMinus();
-console.log("all tests passed");
+// store.subscribe(render);
+// render();

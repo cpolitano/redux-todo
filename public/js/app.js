@@ -1,11 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _reactDom = require("react-dom");
 
@@ -15,15 +23,9 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _expect = require("expect");
-
-var _expect2 = _interopRequireDefault(_expect);
-
-var _deepFreeze = require("deep-freeze");
-
-var _deepFreeze2 = _interopRequireDefault(_deepFreeze);
-
 var _redux = require("redux");
+
+var Component = _react2["default"].Component;
 
 var todo = function todo(state, action) {
 	switch (action.type) {
@@ -71,70 +73,80 @@ var visibilityFilter = function visibilityFilter(state, action) {
 	}
 };
 
+// Combine reducers
 var todoApp = (0, _redux.combineReducers)({
 	todos: todos,
 	visibilityFilter: visibilityFilter
 });
 
+// Create store
 var store = (0, _redux.createStore)(todoApp, {});
-console.log(store.getState());
+
+// Subscribe to the store
+store.subscribe(function () {
+	return console.log(store.getState());
+});
 
 store.dispatch({
-	id: 1,
+	id: 0,
 	text: "the first todo",
 	type: "ADD"
 });
 
-console.log(store.getState());
+var nextTodoId = 1;
 
-var testAddTodo = function testAddTodo() {
-	var stateBefore = [];
-	var action = {
-		type: "ADD",
-		id: 1,
-		text: "Try redux"
-	};
-	var stateAfter = [{
-		id: 1,
-		text: "Try redux",
-		completed: false
-	}];
-	(0, _deepFreeze2["default"])(stateBefore);
-	(0, _deepFreeze2["default"])(action);
-	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
+var TodoApp = (function (_Component) {
+	_inherits(TodoApp, _Component);
+
+	function TodoApp() {
+		_classCallCheck(this, TodoApp);
+
+		_get(Object.getPrototypeOf(TodoApp.prototype), "constructor", this).apply(this, arguments);
+	}
+
+	// Define render function
+
+	_createClass(TodoApp, [{
+		key: "render",
+		value: function render() {
+			return _react2["default"].createElement(
+				"div",
+				null,
+				_react2["default"].createElement(
+					"button",
+					{ onClick: function () {
+							store.dispatch({
+								type: "ADD",
+								text: "test test",
+								id: nextTodoId++
+							});
+						} },
+					"Add Todo"
+				),
+				_react2["default"].createElement(
+					"ul",
+					null,
+					this.props.todos.map(function (todo) {
+						return _react2["default"].createElement(
+							"li",
+							{ key: todo.id },
+							todo.text
+						);
+					})
+				)
+			);
+		}
+	}]);
+
+	return TodoApp;
+})(Component);
+
+var render = function render() {
+	_reactDom2["default"].render(_react2["default"].createElement(TodoApp, { todos: store.getState().todos }), document.getElementById("react-todo-app"));
 };
 
-var testToggleTodo = function testToggleTodo() {
-	var stateBefore = [{
-		id: 1,
-		text: "Try redux",
-		completed: false
-	}, {
-		id: 2,
-		text: "Write tests",
-		completed: false
-	}];
-	var action = {
-		type: "TOGGLE",
-		id: 1
-	};
-	var stateAfter = [{
-		id: 1,
-		text: "Try redux",
-		completed: true
-	}, {
-		id: 2,
-		text: "Write tests",
-		completed: false
-	}];
-	(0, _deepFreeze2["default"])(stateBefore);
-	(0, _deepFreeze2["default"])(action);
-	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
-};
-
-testAddTodo();
-testToggleTodo();
-console.log("todo tests passed");
+store.subscribe(render);
+render();
 "use strict";
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -192,13 +204,14 @@ var Counter = function Counter(_ref) {
 };
 
 // Create the store
-var store = (0, _redux.createStore)(counter);
+// const store = createStore(counter);
 
-// Subscribe to the store
-store.subscribe(function () {
-	return console.log(store.getState());
-});
+// // Subscribe to the store
+// store.subscribe(() =>
+//   console.log(store.getState())
+// );
 
+// Render and attach to DOM
 var render = function render() {
 	ReactDOM.render(React.createElement(Counter, {
 		value: store.getState(),
@@ -207,11 +220,71 @@ var render = function render() {
 		},
 		onDecrement: function () {
 			return store.dispatch({ type: "DECREMENT" });
-		} }), document.getElementById("app"));
+		} }), document.getElementById("react-counter-app"));
 };
 
-store.subscribe(render);
-render();
+// store.subscribe(render);
+// render();
+"use strict";
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var _expect = require("expect");
+
+var _expect2 = _interopRequireDefault(_expect);
+
+var _deepFreeze = require("deep-freeze");
+
+var _deepFreeze2 = _interopRequireDefault(_deepFreeze);
+
+var testAddTodo = function testAddTodo() {
+	var stateBefore = [];
+	var action = {
+		type: "ADD",
+		id: 1,
+		text: "Try redux"
+	};
+	var stateAfter = [{
+		id: 1,
+		text: "Try redux",
+		completed: false
+	}];
+	(0, _deepFreeze2["default"])(stateBefore);
+	(0, _deepFreeze2["default"])(action);
+	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
+};
+
+var testToggleTodo = function testToggleTodo() {
+	var stateBefore = [{
+		id: 1,
+		text: "Try redux",
+		completed: false
+	}, {
+		id: 2,
+		text: "Write tests",
+		completed: false
+	}];
+	var action = {
+		type: "TOGGLE",
+		id: 1
+	};
+	var stateAfter = [{
+		id: 1,
+		text: "Try redux",
+		completed: true
+	}, {
+		id: 2,
+		text: "Write tests",
+		completed: false
+	}];
+	(0, _deepFreeze2["default"])(stateBefore);
+	(0, _deepFreeze2["default"])(action);
+	(0, _expect2["default"])(todos(stateBefore, action)).toEqual(stateAfter);
+};
+
+// testAddTodo();
+// testToggleTodo();
+// console.log("todo tests passed");
 
 var testCounterPlus = function testCounterPlus() {
 	var counterInitial = 0;
@@ -227,9 +300,9 @@ var testCounterMinus = function testCounterMinus() {
 	(0, _expect2["default"])(counter(counterInitial, { type: "DECREMENT" })).toEqual(counterMinus);
 };
 
-testCounterPlus();
-testCounterMinus();
-console.log("all tests passed");
+// testCounterPlus();
+// testCounterMinus();
+// console.log("counter tests passed");
 },{"deep-freeze":2,"expect":8,"react":170,"react-dom":14,"redux":172}],2:[function(require,module,exports){
 module.exports = function deepFreeze (o) {
   Object.freeze(o);

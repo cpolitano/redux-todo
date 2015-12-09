@@ -1,8 +1,7 @@
 "use strict";
 import ReactDOM from "react-dom";
 import React from "react";
-import expect from "expect";
-import deepFreeze from "deep-freeze";
+const { Component } = React;
 import { createStore, combineReducers } from "redux";
 
 const todo = (state, action) => {
@@ -49,79 +48,57 @@ const visibilityFilter = (state = "SHOW_ALL", action) => {
 	}
 }
 
+// Combine reducers
 const todoApp = combineReducers({
 	todos,
 	visibilityFilter
 });
 
+// Create store
 const store = createStore(todoApp, {});
-console.log(store.getState());
+
+// Subscribe to the store
+store.subscribe(() =>
+  console.log(store.getState())
+);
 
 store.dispatch({
-	id: 1,
+	id: 0,
 	text: "the first todo",
 	type: "ADD"
 })
 
-console.log(store.getState());
+let nextTodoId = 1;
+class TodoApp extends Component {
+	render() {
+		return (
+			<div>
+				<button onClick={ () => {
+					store.dispatch({
+						type: "ADD",
+						text: "test test",
+						id: nextTodoId++
+					});
+				}}>Add Todo</button>
+				<ul>
+					{this.props.todos.map(todo => 
+						<li key={todo.id}>
+							{todo.text}
+						</li>
+					)}
+				</ul>
+			</div>
+		);
+	}
+}
 
-const testAddTodo = () => {
-	const stateBefore = [];
-	const action = {
-		type: "ADD",
-		id: 1,
-		text: "Try redux"
-	};
-	const stateAfter = [
-		{
-			id: 1,
-			text: "Try redux",
-			completed: false
-		}
-	];
-	deepFreeze(stateBefore);
-	deepFreeze(action);
-	expect(
-		todos(stateBefore, action)
-	).toEqual(stateAfter);
+// Define render function
+const render = () => {
+	ReactDOM.render(
+		<TodoApp todos={store.getState().todos} />,
+		document.getElementById("react-todo-app")
+	);
 };
 
-const testToggleTodo = () => {
-	const stateBefore = [
-		{
-			id: 1,
-			text: "Try redux",
-			completed: false
-		},
-		{
-			id: 2,
-			text: "Write tests",
-			completed: false
-		}
-	];
-	const action = {
-		type: "TOGGLE",
-		id: 1
-	};
-	const stateAfter = [
-		{
-			id: 1,
-			text: "Try redux",
-			completed: true
-		},
-		{
-			id: 2,
-			text: "Write tests",
-			completed: false
-		}
-	];
-	deepFreeze(stateBefore);
-	deepFreeze(action);
-	expect(
-		todos(stateBefore, action)
-	).toEqual(stateAfter);
-};
-
-testAddTodo();
-testToggleTodo();
-console.log("todo tests passed");
+store.subscribe(render);
+render();
