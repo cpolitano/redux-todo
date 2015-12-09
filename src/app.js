@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import React from "react";
 import expect from "expect";
 import deepFreeze from "deep-freeze";
-import { createStore } from "redux";
+import { createStore, combineReducers } from "redux";
 
 const todo = (state, action) => {
 	switch (action.type) {
@@ -21,7 +21,7 @@ const todo = (state, action) => {
 				...state,
 				completed: !state.completed
 			};
-		case "DEFAULT":
+		default:
 			return state;
 	}
 }
@@ -35,15 +35,12 @@ const todos = (state = [], action) => {
 			];
 		case "TOGGLE":
 			return state.map(t => todo(t, action))
-		case "DEFAULT":
+		default:
 			return state;
 	}
 }
 
-const visibilityFilter = (
-	state = "SHOW_ALL",
-	action
-) => {
+const visibilityFilter = (state = "SHOW_ALL", action) => {
 	switch (action.type) {
 		case "SET_VISIBILITY_FILTER":
 			return action.filter;
@@ -52,20 +49,12 @@ const visibilityFilter = (
 	}
 }
 
-const todoApp = (state = {}, action) => {
-	return {
-		todos: todos(
-			state.todos,
-			action
-		),
-		visibilityFilter: visibilityFilter(
-			state.visibilityFilter,
-			action
-		)
-	};
-};
+const todoApp = combineReducers({
+	todos,
+	visibilityFilter
+});
 
-const store = createStore(todoApp);
+const store = createStore(todoApp, {});
 console.log(store.getState());
 
 store.dispatch({

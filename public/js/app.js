@@ -40,7 +40,7 @@ var todo = function todo(state, action) {
 			return _extends({}, state, {
 				completed: !state.completed
 			});
-		case "DEFAULT":
+		default:
 			return state;
 	}
 };
@@ -55,7 +55,7 @@ var todos = function todos(state, action) {
 			return state.map(function (t) {
 				return todo(t, action);
 			});
-		case "DEFAULT":
+		default:
 			return state;
 	}
 };
@@ -71,16 +71,12 @@ var visibilityFilter = function visibilityFilter(state, action) {
 	}
 };
 
-var todoApp = function todoApp(state, action) {
-	if (state === undefined) state = {};
+var todoApp = (0, _redux.combineReducers)({
+	todos: todos,
+	visibilityFilter: visibilityFilter
+});
 
-	return {
-		todos: todos(state.todos, action),
-		visibilityFilter: visibilityFilter(state.visibilityFilter, action)
-	};
-};
-
-var store = (0, _redux.createStore)(todoApp);
+var store = (0, _redux.createStore)(todoApp, {});
 console.log(store.getState());
 
 store.dispatch({
