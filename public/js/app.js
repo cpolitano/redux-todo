@@ -60,7 +60,27 @@ var todos = function todos(state, action) {
 	}
 };
 
-var store = (0, _redux.createStore)(todos);
+var visibilityFilter = function visibilityFilter(state, action) {
+	if (state === undefined) state = "SHOW_ALL";
+
+	switch (action.type) {
+		case "SET_VISIBILITY_FILTER":
+			return action.filter;
+		default:
+			return state;
+	}
+};
+
+var todoApp = function todoApp(state, action) {
+	if (state === undefined) state = {};
+
+	return {
+		todos: todos(state.todos, action),
+		visibilityFilter: visibilityFilter(state.visibilityFilter, action)
+	};
+};
+
+var store = (0, _redux.createStore)(todoApp);
 console.log(store.getState());
 
 store.dispatch({
