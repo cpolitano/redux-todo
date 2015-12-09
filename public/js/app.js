@@ -135,7 +135,16 @@ var TodoApp = (function (_Component) {
 					this.props.todos.map(function (todo) {
 						return _react2["default"].createElement(
 							"li",
-							{ key: todo.id },
+							{ key: todo.id,
+								onClick: function () {
+									store.dispatch({
+										type: "TOGGLE",
+										id: todo.id
+									});
+								},
+								style: {
+									textDecoration: todo.completed ? "line-through" : "none"
+								} },
 							todo.text
 						);
 					})
