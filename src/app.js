@@ -183,10 +183,10 @@ const TodoApp = ({
 			onAddClick = {text => 
 				store.dispatch({
 					type: "ADD",
-					text: text,
-					id: nextTodoId++
-				});
-			}/>
+					id: nextTodoId++,
+					text
+				})
+			} />
 		<TodoList
 			todos={
 				getVisibleTodos(
@@ -206,7 +206,7 @@ const TodoApp = ({
 				store.dispatch({
 					type: "SET_VISIBILITY_FILTER",
 					filter
-				});
+				})
 			} />
 	</div>
 );
