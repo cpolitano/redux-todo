@@ -1,11 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _reactDom = require("react-dom");
 
@@ -85,13 +93,12 @@ store.dispatch({
 	type: "ADD"
 });
 
-var FilterLink = function FilterLink(_ref) {
-	var filter = _ref.filter;
-	var currentFilter = _ref.currentFilter;
+var Link = function Link(_ref) {
+	var active = _ref.active;
 	var children = _ref.children;
 	var onClick = _ref.onClick;
 
-	if (filter === currentFilter) {
+	if (active) {
 		return _react2["default"].createElement(
 			"span",
 			null,
@@ -103,12 +110,63 @@ var FilterLink = function FilterLink(_ref) {
 		{ href: "#",
 			onClick: function (event) {
 				event.preventDefault();
-				onClick(filter);
+				onClick();
 			}
 		},
 		children
 	);
 };
+
+var FilterLink = (function (_Component) {
+	_inherits(FilterLink, _Component);
+
+	function FilterLink() {
+		_classCallCheck(this, FilterLink);
+
+		_get(Object.getPrototypeOf(FilterLink.prototype), "constructor", this).apply(this, arguments);
+	}
+
+	_createClass(FilterLink, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var _this = this;
+
+			this.unsubscribe = store.subscribe(function () {
+				return(
+					// force re-render when redux store updates
+					_this.forceUpdate()
+				);
+			});
+		}
+	}, {
+		key: "componentWillUnmount",
+		value: function componentWillUnmount() {
+			this.unsubscribe();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var props = this.props;
+			var state = store.getState();
+
+			return _react2["default"].createElement(
+				Link,
+				{
+					active: props.filter === state.visibilityFilter,
+					onClick: function () {
+						return store.dispatch({
+							type: "SET_VISIBILITY_FILTER",
+							filter: props.filter
+						});
+					}
+				},
+				props.children
+			);
+		}
+	}]);
+
+	return FilterLink;
+})(Component);
 
 var AddTodo = function AddTodo(_ref2) {
 	var onAddClick = _ref2.onAddClick;
@@ -177,9 +235,7 @@ var getVisibleTodos = function getVisibleTodos(todos, filter) {
 	}
 };
 
-var Footer = function Footer(_ref5) {
-	var visibilityFilter = _ref5.visibilityFilter;
-	var onFilterClick = _ref5.onFilterClick;
+var Footer = function Footer() {
 	return _react2["default"].createElement(
 		"p",
 		null,
@@ -188,36 +244,30 @@ var Footer = function Footer(_ref5) {
 		_react2["default"].createElement(
 			FilterLink,
 			{
-				filter: "SHOW_ALL",
-				currentFilter: visibilityFilter,
-				onClick: onFilterClick },
+				filter: "SHOW_ALL" },
 			"All"
 		),
 		_react2["default"].createElement("br", null),
 		_react2["default"].createElement(
 			FilterLink,
 			{
-				filter: "SHOW_ACTIVE",
-				currentFilter: visibilityFilter,
-				onClick: onFilterClick },
+				filter: "SHOW_ACTIVE" },
 			"Active"
 		),
 		_react2["default"].createElement("br", null),
 		_react2["default"].createElement(
 			FilterLink,
 			{
-				filter: "SHOW_COMPLETED",
-				currentFilter: visibilityFilter,
-				onClick: onFilterClick },
+				filter: "SHOW_COMPLETED" },
 			"Completed"
 		)
 	);
 };
 
 var nextTodoId = 1;
-var TodoApp = function TodoApp(_ref6) {
-	var todos = _ref6.todos;
-	var visibilityFilter = _ref6.visibilityFilter;
+var TodoApp = function TodoApp(_ref5) {
+	var todos = _ref5.todos;
+	var visibilityFilter = _ref5.visibilityFilter;
 	return _react2["default"].createElement(
 		"div",
 		null,
