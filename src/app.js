@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import React from "react";
 const { Component } = React;
 import { createStore, combineReducers } from "redux";
+// import { Link, FilterLink } from "filters.js";
+
+let nextTodoId = 1;
 
 const todo = (state, action) => {
 	switch (action.type) {
@@ -120,17 +123,20 @@ class FilterLink extends Component {
 	}
 }
 
-const AddTodo = ({
-	onAddClick
-}) => {
+const AddTodo = () => {
 	let input;
+
 	return (
 		<div>
 			<input ref={ node => {
 				input = node;
 			}} />
 			<button onClick={ () => {
-				onAddClick(input.value);
+				store.dispatch({
+					type: "ADD",
+					text: input.value,
+					id: nextTodoId++
+				})
 				input.value = "";
 			}}>Add Todo</button>
 		</div>
@@ -197,51 +203,49 @@ const Footer = () => (
 	</p>
 );
 
-let nextTodoId = 1;
-const TodoApp = ({
-	todos,
-	visibilityFilter
-}) => (
+class VisibleTodoList extends Component {
+	componentDidMount() {
+		this.unsubscribe = store.subscribe(() => 
+			// force re-render when redux store updates
+			this.forceUpdate()
+		);
+	}
+
+	componentWillUnmount() {
+		this.unsubscribe();
+	}
+
+	render() {
+		const props = this.props;
+		const state = store.getState();
+
+		return (
+			<TodoList
+				todos={
+					getVisibleTodos(
+						state.todos,
+						state.visibilityFilter
+					)
+				}
+				onTodoClick={id => 
+					store.dispatch({
+						type: "TOGGLE",
+						id
+					})
+				} />
+		);
+	}
+}
+
+const TodoApp = () => (
 	<div>
-		<AddTodo 
-			onAddClick = {text => 
-				store.dispatch({
-					type: "ADD",
-					id: nextTodoId++,
-					text
-				})
-			} />
-		<TodoList
-			todos={
-				getVisibleTodos(
-					todos,
-					visibilityFilter
-				)
-			} 
-			onTodoClick={id =>
-				store.dispatch({
-					type: "TOGGLE",
-					id
-				})
-			} />
-		<Footer 
-			visibilityFilter={visibilityFilter}
-			onFilterClick={filter => 
-				store.dispatch({
-					type: "SET_VISIBILITY_FILTER",
-					filter
-				})
-			} />
+		<AddTodo />
+		<VisibleTodoList />
+		<Footer />
 	</div>
 );
 
-// Define render function
-const render = () => {
-	ReactDOM.render(
-		<TodoApp {...store.getState()} />,
-		document.getElementById("react-todo-app")
-	);
-};
-
-store.subscribe(render);
-render();
+ReactDOM.render(
+	<TodoApp />,
+	document.getElementById("react-todo-app")
+);

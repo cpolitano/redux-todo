@@ -25,7 +25,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _redux = require("redux");
 
+// import { Link, FilterLink } from "filters.js";
+
 var Component = _react2["default"].Component;
+var nextTodoId = 1;
 
 var todo = function todo(state, action) {
 	switch (action.type) {
@@ -168,10 +171,9 @@ var FilterLink = (function (_Component) {
 	return FilterLink;
 })(Component);
 
-var AddTodo = function AddTodo(_ref2) {
-	var onAddClick = _ref2.onAddClick;
-
+var AddTodo = function AddTodo() {
 	var input = undefined;
+
 	return _react2["default"].createElement(
 		"div",
 		null,
@@ -181,7 +183,11 @@ var AddTodo = function AddTodo(_ref2) {
 		_react2["default"].createElement(
 			"button",
 			{ onClick: function () {
-					onAddClick(input.value);
+					store.dispatch({
+						type: "ADD",
+						text: input.value,
+						id: nextTodoId++
+					});
 					input.value = "";
 				} },
 			"Add Todo"
@@ -189,10 +195,10 @@ var AddTodo = function AddTodo(_ref2) {
 	);
 };
 
-var Todo = function Todo(_ref3) {
-	var onClick = _ref3.onClick;
-	var completed = _ref3.completed;
-	var text = _ref3.text;
+var Todo = function Todo(_ref2) {
+	var onClick = _ref2.onClick;
+	var completed = _ref2.completed;
+	var text = _ref2.text;
 	return _react2["default"].createElement(
 		"li",
 		{ onClick: onClick,
@@ -203,9 +209,9 @@ var Todo = function Todo(_ref3) {
 	);
 };
 
-var TodoList = function TodoList(_ref4) {
-	var todos = _ref4.todos;
-	var onTodoClick = _ref4.onTodoClick;
+var TodoList = function TodoList(_ref3) {
+	var todos = _ref3.todos;
+	var onTodoClick = _ref3.onTodoClick;
 	return _react2["default"].createElement(
 		"ul",
 		null,
@@ -264,47 +270,63 @@ var Footer = function Footer() {
 	);
 };
 
-var nextTodoId = 1;
-var TodoApp = function TodoApp(_ref5) {
-	var todos = _ref5.todos;
-	var visibilityFilter = _ref5.visibilityFilter;
+var VisibleTodoList = (function (_Component2) {
+	_inherits(VisibleTodoList, _Component2);
+
+	function VisibleTodoList() {
+		_classCallCheck(this, VisibleTodoList);
+
+		_get(Object.getPrototypeOf(VisibleTodoList.prototype), "constructor", this).apply(this, arguments);
+	}
+
+	_createClass(VisibleTodoList, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var _this2 = this;
+
+			this.unsubscribe = store.subscribe(function () {
+				return(
+					// force re-render when redux store updates
+					_this2.forceUpdate()
+				);
+			});
+		}
+	}, {
+		key: "componentWillUnmount",
+		value: function componentWillUnmount() {
+			this.unsubscribe();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var props = this.props;
+			var state = store.getState();
+
+			return _react2["default"].createElement(TodoList, {
+				todos: getVisibleTodos(state.todos, state.visibilityFilter),
+				onTodoClick: function (id) {
+					return store.dispatch({
+						type: "TOGGLE",
+						id: id
+					});
+				} });
+		}
+	}]);
+
+	return VisibleTodoList;
+})(Component);
+
+var TodoApp = function TodoApp() {
 	return _react2["default"].createElement(
 		"div",
 		null,
-		_react2["default"].createElement(AddTodo, {
-			onAddClick: function (text) {
-				return store.dispatch({
-					type: "ADD",
-					id: nextTodoId++,
-					text: text
-				});
-			} }),
-		_react2["default"].createElement(TodoList, {
-			todos: getVisibleTodos(todos, visibilityFilter),
-			onTodoClick: function (id) {
-				return store.dispatch({
-					type: "TOGGLE",
-					id: id
-				});
-			} }),
-		_react2["default"].createElement(Footer, {
-			visibilityFilter: visibilityFilter,
-			onFilterClick: function (filter) {
-				return store.dispatch({
-					type: "SET_VISIBILITY_FILTER",
-					filter: filter
-				});
-			} })
+		_react2["default"].createElement(AddTodo, null),
+		_react2["default"].createElement(VisibleTodoList, null),
+		_react2["default"].createElement(Footer, null)
 	);
 };
 
-// Define render function
-var render = function render() {
-	_reactDom2["default"].render(_react2["default"].createElement(TodoApp, store.getState()), document.getElementById("react-todo-app"));
-};
-
-store.subscribe(render);
-render();
+_reactDom2["default"].render(_react2["default"].createElement(TodoApp, null), document.getElementById("react-todo-app"));
 "use strict";
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -383,6 +405,110 @@ var render = function render() {
 
 // store.subscribe(render);
 // render();
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _redux = require("redux");
+
+var Component = _react2["default"].Component;
+
+var Link = function Link(_ref) {
+	var active = _ref.active;
+	var children = _ref.children;
+	var onClick = _ref.onClick;
+
+	if (active) {
+		return _react2["default"].createElement(
+			"span",
+			null,
+			children
+		);
+	}
+	return _react2["default"].createElement(
+		"a",
+		{ href: "#",
+			onClick: function (event) {
+				event.preventDefault();
+				onClick();
+			}
+		},
+		children
+	);
+};
+
+var FilterLink = (function (_Component) {
+	_inherits(FilterLink, _Component);
+
+	function FilterLink() {
+		_classCallCheck(this, FilterLink);
+
+		_get(Object.getPrototypeOf(FilterLink.prototype), "constructor", this).apply(this, arguments);
+	}
+
+	_createClass(FilterLink, [{
+		key: "componentDidMount",
+		value: function componentDidMount() {
+			var _this = this;
+
+			this.unsubscribe = store.subscribe(function () {
+				return(
+					// force re-render when redux store updates
+					_this.forceUpdate()
+				);
+			});
+		}
+	}, {
+		key: "componentWillUnmount",
+		value: function componentWillUnmount() {
+			this.unsubscribe();
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			var props = this.props;
+			var state = store.getState();
+
+			return _react2["default"].createElement(
+				Link,
+				{
+					active: props.filter === state.visibilityFilter,
+					onClick: function () {
+						return store.dispatch({
+							type: "SET_VISIBILITY_FILTER",
+							filter: props.filter
+						});
+					}
+				},
+				props.children
+			);
+		}
+	}]);
+
+	return FilterLink;
+})(Component);
+
+exports["default"] = FilterLink;
+module.exports = exports["default"];
 "use strict";
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
