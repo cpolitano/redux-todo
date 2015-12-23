@@ -33,7 +33,10 @@
   "devDependencies": {
     "babel-plugin-transform-es2015-spread": "^6.1.18",
     "babel-preset-es2015": "^6.1.18",
+    "browserify": "^12.0.1",
     "del": "^2.1.0",
-    "redux-devtools": "^2.1.5"
+    "dest": "^0.3.1",
+    "redux-devtools": "^2.1.5",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

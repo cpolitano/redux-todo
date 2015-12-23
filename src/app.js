@@ -3,7 +3,8 @@ import ReactDOM from "react-dom";
 import React from "react";
 const { Component } = React;
 import { createStore, combineReducers } from "redux";
-// import { Link, FilterLink } from "filters.js";
+// import { todo, todos, visibilityFilter } from "./actions"
+import FilterLink from "./filters";
 
 let nextTodoId = 1;
 
@@ -57,73 +58,7 @@ const todoApp = combineReducers({
 	visibilityFilter
 });
 
-// Create store
-const store = createStore(todoApp, {});
-
-// Subscribe to the store
-store.subscribe(() =>
-  console.log(store.getState())
-);
-
-store.dispatch({
-	id: 0,
-	text: "the first todo",
-	type: "ADD"
-})
-
-const Link = ({
-	active,
-	children,
-	onClick
-}) => {
-	if ( active ) {
-		return <span>{children}</span>
-	}
-	return (
-		<a href="#"
-			onClick={ event => {
-				event.preventDefault();
-				onClick();
-			}}
-		>{children}</a>
-	);
-}
-
-class FilterLink extends Component {
-	componentDidMount() {
-		this.unsubscribe = store.subscribe(() => 
-			// force re-render when redux store updates
-			this.forceUpdate()
-		);
-	}
-
-	componentWillUnmount() {
-		this.unsubscribe();
-	}
-
-	render() {
-		const props = this.props;
-		const state = store.getState();
-
-		return (
-			<Link 
-				active={
-					props.filter === state.visibilityFilter
-				}
-				onClick={() => 
-					store.dispatch({
-						type: "SET_VISIBILITY_FILTER",
-						filter: props.filter
-					})
-				}
-			>
-				{props.children}
-			</Link>
-		);
-	}
-}
-
-const AddTodo = () => {
+const AddTodo = ({ store }) => {
 	let input;
 
 	return (
@@ -185,26 +120,31 @@ const getVisibleTodos = (
 	}
 }
 
-const Footer = () => (
+const Footer = ({ store }) => (
 	<p>
 		Filter Todos:<br/>
 		<FilterLink
-			filter="SHOW_ALL">
+			filter="SHOW_ALL"
+			store={store}>
 			All 
 		</FilterLink><br/>
 		<FilterLink
-			filter="SHOW_ACTIVE">
+			filter="SHOW_ACTIVE"
+			store={store}>
 			Active 
 		</FilterLink><br/>
 		<FilterLink
-			filter="SHOW_COMPLETED">
+			filter="SHOW_COMPLETED"
+			store={store}>
 			Completed 
 		</FilterLink>
 	</p>
 );
 
 class VisibleTodoList extends Component {
+
 	componentDidMount() {
+		const { store } = this.props;
 		this.unsubscribe = store.subscribe(() => 
 			// force re-render when redux store updates
 			this.forceUpdate()
@@ -217,6 +157,7 @@ class VisibleTodoList extends Component {
 
 	render() {
 		const props = this.props;
+		const { store } = props;
 		const state = store.getState();
 
 		return (
@@ -237,15 +178,26 @@ class VisibleTodoList extends Component {
 	}
 }
 
-const TodoApp = () => (
+const TodoApp = ({ store }) => (
 	<div>
-		<AddTodo />
-		<VisibleTodoList />
-		<Footer />
+		<AddTodo store={store} />
+		<VisibleTodoList store={store} />
+		<Footer store={store} />
 	</div>
 );
 
+// Subscribe to the store
+// store.subscribe(() =>
+//   console.log(store.getState())
+// );
+
+// store.dispatch({
+// 	id: 0,
+// 	text: "the first todo",
+// 	type: "ADD"
+// })
+
 ReactDOM.render(
-	<TodoApp />,
+	<TodoApp store={ createStore(todoApp) } />,
 	document.getElementById("react-todo-app")
 );
