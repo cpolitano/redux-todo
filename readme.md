@@ -2,5 +2,4 @@ A sandbox to test out React Redux concepts while following along with Dan Abramo
 
 Steps to run:
 * gulp
-* browserify dist/app.js > public/js/app.js
 * node index.js
