@@ -25,6 +25,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _redux = require("redux");
 
+// import { Provider } from "react-redux";
 // import { todo, todos, visibilityFilter } from "./actions"
 
 var _filters = require("./filters");
@@ -87,7 +88,7 @@ var todoApp = (0, _redux.combineReducers)({
 	visibilityFilter: visibilityFilter
 });
 
-var AddTodo = function AddTodo(_ref) {
+var AddTodo = function AddTodo(props, _ref) {
 	var store = _ref.store;
 
 	var input = undefined;
@@ -111,6 +112,10 @@ var AddTodo = function AddTodo(_ref) {
 			"Add Todo"
 		)
 	);
+};
+
+AddTodo.contextTypes = {
+	store: _react2["default"].PropTypes.object
 };
 
 var Todo = function Todo(_ref2) {
@@ -159,8 +164,7 @@ var getVisibleTodos = function getVisibleTodos(todos, filter) {
 	}
 };
 
-var Footer = function Footer(_ref4) {
-	var store = _ref4.store;
+var Footer = function Footer() {
 	return _react2["default"].createElement(
 		"p",
 		null,
@@ -169,24 +173,21 @@ var Footer = function Footer(_ref4) {
 		_react2["default"].createElement(
 			_filters2["default"],
 			{
-				filter: "SHOW_ALL",
-				store: store },
+				filter: "SHOW_ALL" },
 			"All"
 		),
 		_react2["default"].createElement("br", null),
 		_react2["default"].createElement(
 			_filters2["default"],
 			{
-				filter: "SHOW_ACTIVE",
-				store: store },
+				filter: "SHOW_ACTIVE" },
 			"Active"
 		),
 		_react2["default"].createElement("br", null),
 		_react2["default"].createElement(
 			_filters2["default"],
 			{
-				filter: "SHOW_COMPLETED",
-				store: store },
+				filter: "SHOW_COMPLETED" },
 			"Completed"
 		)
 	);
@@ -206,7 +207,7 @@ var VisibleTodoList = (function (_Component) {
 		value: function componentDidMount() {
 			var _this = this;
 
-			var store = this.props.store;
+			var store = this.context.store;
 
 			this.unsubscribe = store.subscribe(function () {
 				return(
@@ -224,7 +225,7 @@ var VisibleTodoList = (function (_Component) {
 		key: "render",
 		value: function render() {
 			var props = this.props;
-			var store = props.store;
+			var store = this.context.store;
 
 			var state = store.getState();
 
@@ -242,15 +243,48 @@ var VisibleTodoList = (function (_Component) {
 	return VisibleTodoList;
 })(Component);
 
-var TodoApp = function TodoApp(_ref5) {
-	var store = _ref5.store;
+VisibleTodoList.contextTypes = {
+	store: _react2["default"].PropTypes.object
+};
+
+var TodoApp = function TodoApp() {
 	return _react2["default"].createElement(
 		"div",
 		null,
-		_react2["default"].createElement(AddTodo, { store: store }),
-		_react2["default"].createElement(VisibleTodoList, { store: store }),
-		_react2["default"].createElement(Footer, { store: store })
+		_react2["default"].createElement(AddTodo, null),
+		_react2["default"].createElement(VisibleTodoList, null),
+		_react2["default"].createElement(Footer, null)
 	);
+};
+
+var Provider = (function (_Component2) {
+	_inherits(Provider, _Component2);
+
+	function Provider() {
+		_classCallCheck(this, Provider);
+
+		_get(Object.getPrototypeOf(Provider.prototype), "constructor", this).apply(this, arguments);
+	}
+
+	_createClass(Provider, [{
+		key: "getChildContext",
+		value: function getChildContext() {
+			return {
+				store: this.props.store
+			};
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return this.props.children;
+		}
+	}]);
+
+	return Provider;
+})(Component);
+
+Provider.childContextTypes = {
+	store: _react2["default"].PropTypes.object
 };
 
 // Subscribe to the store
@@ -264,7 +298,11 @@ var TodoApp = function TodoApp(_ref5) {
 // 	type: "ADD"
 // })
 
-_reactDom2["default"].render(_react2["default"].createElement(TodoApp, { store: (0, _redux.createStore)(todoApp) }), document.getElementById("react-todo-app"));
+_reactDom2["default"].render(_react2["default"].createElement(
+	Provider,
+	{ store: (0, _redux.createStore)(todoApp) },
+	_react2["default"].createElement(TodoApp, null)
+), document.getElementById("react-todo-app"));
 },{"./filters":2,"react":160,"react-dom":4,"redux":162}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", {
@@ -325,7 +363,7 @@ var FilterLink = (function (_Component) {
 		value: function componentDidMount() {
 			var _this = this;
 
-			var store = this.props.store;
+			var store = this.context.store;
 
 			this.unsubscribe = store.subscribe(function () {
 				return(
@@ -343,7 +381,7 @@ var FilterLink = (function (_Component) {
 		key: "render",
 		value: function render() {
 			var props = this.props;
-			var store = props.store;
+			var store = this.context.store;
 
 			var state = store.getState();
 
@@ -367,6 +405,10 @@ var FilterLink = (function (_Component) {
 })(Component);
 
 exports["default"] = FilterLink;
+
+FilterLink.contextTypes = {
+	store: _react2["default"].PropTypes.object
+};
 module.exports = exports["default"];
 },{"react":160}],3:[function(require,module,exports){
 // shim for using process in browser

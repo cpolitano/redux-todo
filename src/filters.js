@@ -23,7 +23,7 @@ const Link = ({
 export default class FilterLink extends Component {
 
 	componentDidMount() {
-		const { store } = this.props;
+		const { store } = this.context;
 		this.unsubscribe = store.subscribe(() => 
 			// force re-render when redux store updates
 			this.forceUpdate()
@@ -36,7 +36,7 @@ export default class FilterLink extends Component {
 
 	render() {
 		const props = this.props;
-		const { store } = props;
+		const { store } = this.context;
 		const state = store.getState();
 
 		return (
@@ -56,3 +56,7 @@ export default class FilterLink extends Component {
 		);
 	}
 }
+
+FilterLink.contextTypes = {
+	store: React.PropTypes.object
+};
