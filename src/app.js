@@ -10,47 +10,71 @@ import FilterLink from "./filters";
 let nextTodoId = 1;
 
 const todo = (state, action) => {
-	switch (action.type) {
-		case "ADD":
-			return {
+	let nextState;
+	let todoAction = {
+		"ADD": function() {
+			nextState = {
 				id: action.id,
 				text: action.text,
 				completed: false
 			};
-		case "TOGGLE":
+		},
+		"TOGGLE": function() {
 			if (state.id !== action.id) {
-				return state;
+				nextState = state;
+			} else {
+				nextState = {
+					...state,
+					completed: !state.completed
+				};
 			}
-			return {
-				...state,
-				completed: !state.completed
-			};
-		default:
-			return state;
-	}
+		},
+		"DEFAULT": function() {
+			nextState = state;
+		}
+	};
+
+	(todoAction[action.type] || todoAction["DEFAULT"])();
+
+	return nextState;
 }
 
 const todos = (state = [], action) => {
-	switch (action.type) {
-		case "ADD":
-			return [
+	let nextState;
+	let todosAction = {
+		"ADD": function() {
+			nextState = [
 				...state,
 				todo(undefined, action)
 			];
-		case "TOGGLE":
-			return state.map(t => todo(t, action))
-		default:
-			return state;
-	}
+		},
+		"TOGGLE": function() {
+			nextState = state.map(t => todo(t, action));
+		},
+		"DEFAULT": function() {
+			nextState = state;
+		}
+	};
+
+	(todosAction[action.type] || todosAction["DEFAULT"])();
+
+	return nextState;
 }
 
 const visibilityFilter = (state = "SHOW_ALL", action) => {
-	switch (action.type) {
-		case "SET_VISIBILITY_FILTER":
-			return action.filter;
-		default:
-			return state;
-	}
+	let nextState;
+	let filterAction = {
+		"SET_VISIBILITY_FILTER": function() {
+			nextState = action.filter;
+		},
+		"DEFAULT": function() {
+			nextState = state;
+		}
+	};
+
+	(filterAction[action.type] || filterAction["DEFAULT"])();
+
+	return nextState;
 }
 
 // Combine reducers
@@ -111,18 +135,23 @@ const TodoList = ({
 	</ul>
 );
 
-const getVisibleTodos = (
-	todos,
-	filter
-) => {
-	switch (filter) {
-		case "SHOW_ALL":
-			return todos;
-		case "SHOW_ACTIVE":
-			return todos.filter(todo => !todo.completed)
-		case "SHOW_COMPLETED":
-			return todos.filter(todo => todo.completed)
-	}
+const getVisibleTodos = (todos, filter) => {
+	let filteredTodos;
+	let filterCondition = {
+		"SHOW_ALL": function() {
+			filteredTodos = todos;
+		},
+		"SHOW_ACTIVE": function() {
+			filteredTodos = todos.filter(todo => !todo.completed);
+		},
+		"SHOW_COMPLETED": function() {
+			filteredTodos = todos.filter(todo => todo.completed);
+		}
+	};
+
+	filterCondition[filter]();
+	
+	return filteredTodos;
 }
 
 const Footer = () => (

@@ -37,49 +37,73 @@ var Component = _react2["default"].Component;
 var nextTodoId = 1;
 
 var todo = function todo(state, action) {
-	switch (action.type) {
-		case "ADD":
-			return {
+	var nextState = undefined;
+	var todoAction = {
+		"ADD": function ADD() {
+			nextState = {
 				id: action.id,
 				text: action.text,
 				completed: false
 			};
-		case "TOGGLE":
+		},
+		"TOGGLE": function TOGGLE() {
 			if (state.id !== action.id) {
-				return state;
+				nextState = state;
+			} else {
+				nextState = _extends({}, state, {
+					completed: !state.completed
+				});
 			}
-			return _extends({}, state, {
-				completed: !state.completed
-			});
-		default:
-			return state;
-	}
+		},
+		"DEFAULT": function DEFAULT() {
+			nextState = state;
+		}
+	};
+
+	(todoAction[action.type] || todoAction["DEFAULT"])();
+
+	return nextState;
 };
 
 var todos = function todos(state, action) {
 	if (state === undefined) state = [];
 
-	switch (action.type) {
-		case "ADD":
-			return [].concat(_toConsumableArray(state), [todo(undefined, action)]);
-		case "TOGGLE":
-			return state.map(function (t) {
+	var nextState = undefined;
+	var todosAction = {
+		"ADD": function ADD() {
+			nextState = [].concat(_toConsumableArray(state), [todo(undefined, action)]);
+		},
+		"TOGGLE": function TOGGLE() {
+			nextState = state.map(function (t) {
 				return todo(t, action);
 			});
-		default:
-			return state;
-	}
+		},
+		"DEFAULT": function DEFAULT() {
+			nextState = state;
+		}
+	};
+
+	(todosAction[action.type] || todosAction["DEFAULT"])();
+
+	return nextState;
 };
 
 var visibilityFilter = function visibilityFilter(state, action) {
 	if (state === undefined) state = "SHOW_ALL";
 
-	switch (action.type) {
-		case "SET_VISIBILITY_FILTER":
-			return action.filter;
-		default:
-			return state;
-	}
+	var nextState = undefined;
+	var filterAction = {
+		"SET_VISIBILITY_FILTER": function SET_VISIBILITY_FILTER() {
+			nextState = action.filter;
+		},
+		"DEFAULT": function DEFAULT() {
+			nextState = state;
+		}
+	};
+
+	(filterAction[action.type] || filterAction["DEFAULT"])();
+
+	return nextState;
 };
 
 // Combine reducers
@@ -150,18 +174,26 @@ var TodoList = function TodoList(_ref3) {
 };
 
 var getVisibleTodos = function getVisibleTodos(todos, filter) {
-	switch (filter) {
-		case "SHOW_ALL":
-			return todos;
-		case "SHOW_ACTIVE":
-			return todos.filter(function (todo) {
+	var filteredTodos = undefined;
+	var filterCondition = {
+		"SHOW_ALL": function SHOW_ALL() {
+			filteredTodos = todos;
+		},
+		"SHOW_ACTIVE": function SHOW_ACTIVE() {
+			filteredTodos = todos.filter(function (todo) {
 				return !todo.completed;
 			});
-		case "SHOW_COMPLETED":
-			return todos.filter(function (todo) {
+		},
+		"SHOW_COMPLETED": function SHOW_COMPLETED() {
+			filteredTodos = todos.filter(function (todo) {
 				return todo.completed;
 			});
-	}
+		}
+	};
+
+	filterCondition[filter]();
+
+	return filteredTodos;
 };
 
 var Footer = function Footer() {
