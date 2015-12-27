@@ -5,6 +5,7 @@ const { Component } = React;
 import { createStore, combineReducers } from "redux";
 import { Provider, connect } from "react-redux";
 // import { todo, todos, visibilityFilter } from "./actions"
+import VisibleTodoList from "./visible-todo-list"
 import FilterLink from "./filters";
 
 let nextTodoId = 1;
@@ -107,53 +108,6 @@ AddTodo.contextTypes = {
 	store: React.PropTypes.object
 };
 
-const Todo = ({
-	onClick,
-	completed,
-	text
-}) => (
-	<li onClick ={onClick}
-		style={{
-			textDecoration: 
-				completed ? "line-through" : "none"
-		}}>
-		{text}
-	</li>
-);
-
-const TodoList = ({
-	todos,
-	onTodoClick
-}) => (
-	<ul>
-		{todos.map(todo => 
-			<Todo 
-				key={todo.id}
-				{...todo}
-				onClick={() => onTodoClick(todo.id)} />
-		)}
-	</ul>
-);
-
-const getVisibleTodos = (todos, filter) => {
-	let filteredTodos;
-	let filterCondition = {
-		"SHOW_ALL": function() {
-			filteredTodos = todos;
-		},
-		"SHOW_ACTIVE": function() {
-			filteredTodos = todos.filter(todo => !todo.completed);
-		},
-		"SHOW_COMPLETED": function() {
-			filteredTodos = todos.filter(todo => todo.completed);
-		}
-	};
-
-	filterCondition[filter]();
-	
-	return filteredTodos;
-}
-
 const Footer = () => (
 	<p>
 		Filter Todos:<br/>
@@ -171,31 +125,6 @@ const Footer = () => (
 		</FilterLink>
 	</p>
 );
-
-const mapStateToProps = (state) => {
-	return {
-		todos: getVisibleTodos(
-			state.todos,
-			state.visibilityFilter
-		)
-	}
-};
-
-const mapDispatchToProps = (dispatch) => {
-	return {
-		onTodoClick: (id) => {
-			dispatch({
-				type: "TOGGLE",
-				id
-			})
-		}
-	}
-};
-
-const VisibleTodoList = connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(TodoList);
 
 const TodoApp = () => (
 	<div>
