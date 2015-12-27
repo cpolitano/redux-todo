@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import React from "react";
 const { Component } = React;
 import { createStore, combineReducers } from "redux";
-// import { Provider } from "react-redux";
+import { Provider } from "react-redux";
 // import { todo, todos, visibilityFilter } from "./actions"
 import FilterLink from "./filters";
 
@@ -220,21 +220,6 @@ const TodoApp = () => (
 		<Footer />
 	</div>
 );
-
-class Provider extends Component {
-	getChildContext() {
-		return {
-			store: this.props.store
-		};
-	}
-	render() {
-		return this.props.children;
-	}
-}
-
-Provider.childContextTypes = {
-	store: React.PropTypes.object
-};
 
 // Subscribe to the store
 // store.subscribe(() =>
