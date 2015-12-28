@@ -1,6 +1,30 @@
 "use strict";
 import React from "react";
-const { Component } = React;
+import { connect } from "react-redux";
+
+const mapStateToProps = (
+	state,
+	ownProps
+) => {
+	return {
+		active: 
+			ownProps.filter === state.visibilityFilter
+	}
+};
+
+const mapDispatchToProps = (
+	dispatch,
+	ownProps
+) => {
+	return {
+		onClick: () => {
+			dispatch({
+				type: "SET_VISIBILITY_FILTER",
+				filter: ownProps.filter
+			});
+		}
+	}
+};
 
 const Link = ({
 	active,
@@ -20,43 +44,7 @@ const Link = ({
 	);
 }
 
-export default class FilterLink extends Component {
-
-	componentDidMount() {
-		const { store } = this.context;
-		this.unsubscribe = store.subscribe(() => 
-			// force re-render when redux store updates
-			this.forceUpdate()
-		);
-	}
-
-	componentWillUnmount() {
-		this.unsubscribe();
-	}
-
-	render() {
-		const props = this.props;
-		const { store } = this.context;
-		const state = store.getState();
-
-		return (
-			<Link 
-				active={
-					props.filter === state.visibilityFilter
-				}
-				onClick={() => 
-					store.dispatch({
-						type: "SET_VISIBILITY_FILTER",
-						filter: props.filter
-					})
-				}
-			>
-				{props.children}
-			</Link>
-		);
-	}
-}
-
-FilterLink.contextTypes = {
-	store: React.PropTypes.object
-};
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Link);

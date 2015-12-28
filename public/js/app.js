@@ -205,21 +205,30 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var Component = _react2["default"].Component;
+var _reactRedux = require("react-redux");
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		active: ownProps.filter === state.visibilityFilter
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+	return {
+		onClick: function onClick() {
+			dispatch({
+				type: "SET_VISIBILITY_FILTER",
+				filter: ownProps.filter
+			});
+		}
+	};
+};
 
 var Link = function Link(_ref) {
 	var active = _ref.active;
@@ -245,68 +254,9 @@ var Link = function Link(_ref) {
 	);
 };
 
-var FilterLink = (function (_Component) {
-	_inherits(FilterLink, _Component);
-
-	function FilterLink() {
-		_classCallCheck(this, FilterLink);
-
-		_get(Object.getPrototypeOf(FilterLink.prototype), "constructor", this).apply(this, arguments);
-	}
-
-	_createClass(FilterLink, [{
-		key: "componentDidMount",
-		value: function componentDidMount() {
-			var _this = this;
-
-			var store = this.context.store;
-
-			this.unsubscribe = store.subscribe(function () {
-				return(
-					// force re-render when redux store updates
-					_this.forceUpdate()
-				);
-			});
-		}
-	}, {
-		key: "componentWillUnmount",
-		value: function componentWillUnmount() {
-			this.unsubscribe();
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			var props = this.props;
-			var store = this.context.store;
-
-			var state = store.getState();
-
-			return _react2["default"].createElement(
-				Link,
-				{
-					active: props.filter === state.visibilityFilter,
-					onClick: function () {
-						return store.dispatch({
-							type: "SET_VISIBILITY_FILTER",
-							filter: props.filter
-						});
-					}
-				},
-				props.children
-			);
-		}
-	}]);
-
-	return FilterLink;
-})(Component);
-
-exports["default"] = FilterLink;
-
-FilterLink.contextTypes = {
-	store: _react2["default"].PropTypes.object
-};
+exports["default"] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Link);
 module.exports = exports["default"];
-},{"react":171}],4:[function(require,module,exports){
+},{"react":171,"react-redux":9}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", {
 	value: true
