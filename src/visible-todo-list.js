@@ -1,6 +1,5 @@
 "use strict";
 import React from "react";
-const { Component } = React;
 import { connect } from "react-redux";
 
 const Todo = ({

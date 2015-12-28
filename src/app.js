@@ -5,10 +5,9 @@ const { Component } = React;
 import { createStore, combineReducers } from "redux";
 import { Provider, connect } from "react-redux";
 // import { todo, todos, visibilityFilter } from "./actions"
-import VisibleTodoList from "./visible-todo-list"
+import AddTodo from "./add-todo";
+import VisibleTodoList from "./visible-todo-list";
 import FilterLink from "./filters";
-
-let nextTodoId = 1;
 
 const todo = (state, action) => {
 	let nextState;
@@ -84,29 +83,6 @@ const todoApp = combineReducers({
 	visibilityFilter
 });
 
-const AddTodo = (props, { store }) => {
-	let input;
-
-	return (
-		<div>
-			<input ref={ node => {
-				input = node;
-			}} />
-			<button onClick={ () => {
-				store.dispatch({
-					type: "ADD",
-					text: input.value,
-					id: nextTodoId++
-				})
-				input.value = "";
-			}}>Add Todo</button>
-		</div>
-	);
-};
-
-AddTodo.contextTypes = {
-	store: React.PropTypes.object
-};
 
 const Footer = () => (
 	<p>
@@ -133,17 +109,6 @@ const TodoApp = () => (
 		<Footer />
 	</div>
 );
-
-// Subscribe to the store
-// store.subscribe(() =>
-//   console.log(store.getState())
-// );
-
-// store.dispatch({
-// 	id: 0,
-// 	text: "the first todo",
-// 	type: "ADD"
-// })
 
 ReactDOM.render(
 	<Provider store={ createStore(todoApp) }>
