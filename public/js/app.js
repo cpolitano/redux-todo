@@ -13,6 +13,13 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = require("react-redux");
 
 var nextTodoId = 1;
+var addTodoAction = function addTodoAction(text) {
+	return {
+		type: "ADD",
+		id: nextTodoId++,
+		text: text
+	};
+};
 
 var AddTodo = function AddTodo(_ref) {
 	var dispatch = _ref.dispatch;
@@ -28,11 +35,12 @@ var AddTodo = function AddTodo(_ref) {
 		_react2["default"].createElement(
 			"button",
 			{ onClick: function () {
-					dispatch({
-						type: "ADD",
-						text: input.value,
-						id: nextTodoId++
-					});
+					// dispatch({
+					// 	type: "ADD",
+					// 	text: input.value,
+					// 	id: nextTodoId++
+					// })
+					dispatch(addTodoAction(input.value));
 					input.value = "";
 				} },
 			"Add Todo"
@@ -213,6 +221,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = require("react-redux");
 
+var filterAction = function filterAction(filter) {
+	return {
+		type: "SET_VISIBILITY_FILTER",
+		filter: filter
+	};
+};
+
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		active: ownProps.filter === state.visibilityFilter
@@ -222,10 +237,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
 	return {
 		onClick: function onClick() {
-			dispatch({
-				type: "SET_VISIBILITY_FILTER",
-				filter: ownProps.filter
-			});
+			dispatch(filterAction(ownProps.filter));
 		}
 	};
 };
@@ -326,6 +338,13 @@ var getVisibleTodos = function getVisibleTodos(todos, filter) {
 	return filteredTodos;
 };
 
+var toggleTodo = function toggleTodo(id) {
+	return {
+		type: "TOGGLE",
+		id: id
+	};
+};
+
 var mapStateToProps = function mapStateToProps(state) {
 	return {
 		todos: getVisibleTodos(state.todos, state.visibilityFilter)
@@ -335,10 +354,7 @@ var mapStateToProps = function mapStateToProps(state) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		onTodoClick: function onTodoClick(id) {
-			dispatch({
-				type: "TOGGLE",
-				id: id
-			});
+			dispatch(toggleTodo(id));
 		}
 	};
 };

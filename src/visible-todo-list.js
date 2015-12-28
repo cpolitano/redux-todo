@@ -49,6 +49,13 @@ const getVisibleTodos = (todos, filter) => {
 	return filteredTodos;
 }
 
+let toggleTodo = (id) => {
+	return {
+		type: "TOGGLE",
+		id
+	}
+}
+
 const mapStateToProps = (state) => {
 	return {
 		todos: getVisibleTodos(
@@ -61,10 +68,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		onTodoClick: (id) => {
-			dispatch({
-				type: "TOGGLE",
-				id
-			})
+			dispatch(toggleTodo(id));
 		}
 	}
 };

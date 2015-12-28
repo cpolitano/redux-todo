@@ -2,6 +2,13 @@
 import React from "react";
 import { connect } from "react-redux";
 
+let filterAction = (filter) => {
+	return {
+		type: "SET_VISIBILITY_FILTER",
+		filter
+	}
+}
+
 const mapStateToProps = (
 	state,
 	ownProps
@@ -18,10 +25,7 @@ const mapDispatchToProps = (
 ) => {
 	return {
 		onClick: () => {
-			dispatch({
-				type: "SET_VISIBILITY_FILTER",
-				filter: ownProps.filter
-			});
+			dispatch(filterAction(ownProps.filter));
 		}
 	}
 };
